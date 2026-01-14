@@ -1,9 +1,68 @@
 import React, { useState } from "react";
-import "./AuthForm.css"; // Make sure this CSS file exists in the same folder
+import { auth } from "../firebase";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
+import { useNavigate } from "react-router-dom";
+import "./AuthForm.css";
 
 const AuthForm = () => {
-  // State to track which tab is active
   const [activeTab, setActiveTab] = useState("login");
+  const navigate = useNavigate();
+
+  const [loginEmail, setLoginEmail] = useState("");
+  const [loginPassword, setLoginPassword] = useState("");
+
+  const [signupName, setSignupName] = useState("");
+  const [signupEmail, setSignupEmail] = useState("");
+  const [signupPassword, setSignupPassword] = useState("");
+  const [signupConfirmPassword, setSignupConfirmPassword] = useState("");
+
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  // ---------------- LOGIN ----------------
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+
+    try {
+      await signInWithEmailAndPassword(auth, loginEmail, loginPassword);
+      navigate("/dashboard");
+    } catch (err) {
+      setError(err.message);
+    }
+
+    setLoading(false);
+  };
+
+  // ---------------- SIGNUP ----------------
+  const handleSignup = async (e) => {
+    e.preventDefault();
+    setError("");
+
+    if (signupPassword !== signupConfirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      await createUserWithEmailAndPassword(
+        auth,
+        signupEmail,
+        signupPassword
+      );
+      navigate("/dashboard");
+    } catch (err) {
+      setError(err.message);
+    }
+
+    setLoading(false);
+  };
 
   return (
     <div className="container">
@@ -23,25 +82,74 @@ const AuthForm = () => {
         </div>
       </div>
 
-      {/* Login Form */}
+      {/* LOGIN */}
       {activeTab === "login" && (
-        <form className="form-container">
-          <input type="email" placeholder="Email" required />
-          <input type="password" placeholder="Password" required />
-          <button type="submit">Login</button>
+        <form className="form-container" onSubmit={handleLogin}>
+          <input
+            type="email"
+            placeholder="Email"
+            value={loginEmail}
+            onChange={(e) => setLoginEmail(e.target.value)}
+            required
+          />
+
+          <input
+            type="password"
+            placeholder="Password"
+            value={loginPassword}
+            onChange={(e) => setLoginPassword(e.target.value)}
+            required
+          />
+
+          <button type="submit" disabled={loading}>
+            {loading ? "Logging in..." : "Login"}
+          </button>
         </form>
       )}
 
-      {/* Signup Form */}
+      {/* SIGNUP */}
       {activeTab === "signup" && (
-        <form className="form-container">
-          <input type="text" placeholder="Full Name" required />
-          <input type="email" placeholder="Email" required />
-          <input type="password" placeholder="Password" required />
-          <input type="password" placeholder="Confirm Password" required />
-          <button type="submit">Sign Up</button>
+        <form className="form-container" onSubmit={handleSignup}>
+          <input
+            type="text"
+            placeholder="Full Name"
+            value={signupName}
+            onChange={(e) => setSignupName(e.target.value)}
+            required
+          />
+
+          <input
+            type="email"
+            placeholder="Email"
+            value={signupEmail}
+            onChange={(e) => setSignupEmail(e.target.value)}
+            required
+          />
+
+          <input
+            type="password"
+            placeholder="Password"
+            value={signupPassword}
+            onChange={(e) => setSignupPassword(e.target.value)}
+            required
+          />
+
+          <input
+            type="password"
+            placeholder="Confirm Password"
+            value={signupConfirmPassword}
+            onChange={(e) => setSignupConfirmPassword(e.target.value)}
+            required
+          />
+
+          <button type="submit" disabled={loading}>
+            {loading ? "Creating account..." : "Sign Up"}
+          </button>
         </form>
       )}
+
+      {/* Error */}
+      {error && <p style={{ color: "red", marginTop: "10px" }}>{error}</p>}
     </div>
   );
 };
