@@ -136,15 +136,16 @@ const AuthForm = () => {
           />
 
           <button type="submit" disabled={loading}>
+            <i className="fa-solid fa-envelope"></i> &nbsp;
             {loading ? "Logging in..." : "Login"}
           </button>
 
           <div className="oauth-buttons">
             <button type="button" onClick={handleGoogleLogin}>
-              Continue with Google
+              <i className="fa-brands fa-google"></i> Continue with Google
             </button>
             <button type="button" onClick={handleGithubLogin}>
-              Continue with GitHub
+              <i className="fa-brands fa-github"></i> Continue with GitHub
             </button>
           </div>
         </form>
@@ -186,15 +187,16 @@ const AuthForm = () => {
           />
 
           <button type="submit" disabled={loading}>
+            <i className="fa-solid fa-user-plus"></i> &nbsp;
             {loading ? "Creating account..." : "Sign Up"}
           </button>
 
           <div className="oauth-buttons">
             <button type="button" onClick={handleGoogleLogin}>
-              Continue with Google
+              <i className="fa-brands fa-google"></i> Continue with Google
             </button>
             <button type="button" onClick={handleGithubLogin}>
-              Continue with GitHub
+              <i className="fa-brands fa-github"></i> Continue with GitHub
             </button>
           </div>
         </form>
