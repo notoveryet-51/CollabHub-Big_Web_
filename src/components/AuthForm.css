@@ -151,3 +151,20 @@ p {
   background: #9bbbd4;
   cursor: not-allowed;
 }
+.error {
+  color: #e63946;
+  font-size: 14px;
+  margin-top: 14px;
+  text-align: center;
+}
+.forgot {
+  color: #007bff;
+  font-size: 13px;
+  margin-top: 10px;
+  cursor: pointer;
+  text-align: center;
+}
+
+.forgot:hover {
+  text-decoration: underline;
+}
