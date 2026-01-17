@@ -46,19 +46,23 @@ function Home() {
         </div>
       </div>
 
-      {/* MAIN CONTENT */}
+  return (
+    <div className="home-page">
       <main className="container">
         <h1 className="page-title">Available Study Requests</h1>
         <p className="subtitle">
           Browse and join study sessions posted by fellow students
         </p>
 
-        <input
-          className="search-box"
-          type="text"
-          placeholder="Search by subject or topic..."
-        />
-
+        <div className="search-container">
+          <input
+            className="search-box"
+            type="text"
+            placeholder="🔍 Search by subject or topic..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
         <div className="cards">
           {/* CARD 1 */}
           <div className="card">
@@ -139,7 +143,7 @@ function Home() {
           </div>
         </div>
       </main>
-    </>
+    </div>
   );
 }
 
