@@ -21,7 +21,7 @@ const Profile = () => {
         <div className="profile-info-grid">
           <div className="info-box">
             <span className="label">Course</span>
-            <span>MCA</span>
+            MCA
           </div>
 
           <div className="info-box">

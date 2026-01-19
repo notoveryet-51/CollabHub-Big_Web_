@@ -9,7 +9,6 @@
 /* Page center */
 body {
   min-height: 100vh;
-  backdrop-filter: blur(5px);
   display: flex;
   align-items: center;
   justify-content: center;
