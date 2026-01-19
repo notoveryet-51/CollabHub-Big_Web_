@@ -1,14 +1,22 @@
 import React, { useEffect, useState } from "react";
 import { auth, db } from "../firebase";
-import { collection, query, orderBy, onSnapshot, updateDoc, doc } from "firebase/firestore";
+import {
+  collection,
+  query,
+  orderBy,
+  onSnapshot,
+} from "firebase/firestore";
+import { signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import "./Dashboard.css";
 
 const Dashboard = () => {
   const [userName, setUserName] = useState("");
   const [posts, setPosts] = useState([]);
-  const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  // 🔹 REQUIRED STATE (was missing)
+  const [searchTerm, setSearchTerm] = useState("");
 
   const navigate = useNavigate();
 
@@ -22,14 +30,11 @@ const Dashboard = () => {
       try {
         const token = await auth.currentUser.getIdToken();
 
-        const res = await fetch("http://localhost:5000/api/user/dashboard", {
+        await fetch("http://localhost:5000/api/user/dashboard", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-
-        const data = await res.json();
-        console.log("Backend data:", data);
       } catch (err) {
         console.error("Dashboard fetch error:", err);
       }
@@ -42,7 +47,7 @@ const Dashboard = () => {
   useEffect(() => {
     const q = query(collection(db, "posts"), orderBy("timestamp", "desc"));
 
-    const unsubscribePosts = onSnapshot(q, (snapshot) => {
+    const unsubscribe = onSnapshot(q, (snapshot) => {
       const postsArray = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
@@ -51,22 +56,21 @@ const Dashboard = () => {
       setLoading(false);
     });
 
-    return () => unsubscribePosts();
+    return () => unsubscribe();
   }, []);
 
-  // 🔹 3. Logout handler
+  // 🔹 3. Logout
   const handleLogout = async () => {
     await signOut(auth);
     localStorage.removeItem("userLoggedIn");
     navigate("/");
   };
 
-  // 🔹 4. Search & filter logic
+  // 🔹 4. Search logic (FIXED)
   const filteredPosts = posts.filter(
     (post) =>
-      (post.content?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        post.subject?.toLowerCase().includes(searchTerm.toLowerCase())) &&
-      (filter === "All" || post.category === filter)
+      post.content?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      post.subject?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   // 🔹 5. Simple analytics
@@ -77,6 +81,7 @@ const Dashboard = () => {
   return (
     <div className="dashboard-container">
       <div className="dashboard-layout">
+
         {/* LEFT SIDEBAR */}
         <aside className="dashboard-sidebar">
           <div className="user-welcome">
@@ -111,6 +116,7 @@ const Dashboard = () => {
 
         {/* MAIN FEED */}
         <main className="main-feed">
+
           {/* ANALYTICS */}
           <div className="analytics-grid">
             <div className="analytics-card">
@@ -120,6 +126,7 @@ const Dashboard = () => {
                 <p>3 Days</p>
               </div>
             </div>
+
             <div className="stat-widget">
               <div className="widget-icon clock">⌛</div>
               <div className="widget-data">
@@ -127,22 +134,25 @@ const Dashboard = () => {
                 <h4>12.5 hrs</h4>
               </div>
             </div>
+
             <div className="stat-widget">
               <div className="widget-icon check">✅</div>
               <div className="widget-data">
                 <span>Completed</span>
-                <h4>8 Sessions</h4>
+                <h4>{myRequestsCount} Sessions</h4>
               </div>
             </div>
-          </section>
+          </div>
 
-          {/* --- RATING BREAKDOWN GRAPH --- */}
+          {/* RATING */}
           <section className="rating-analytics-card">
             <div className="rating-header">
               <h3>Collaboration Rating</h3>
-              <div className="rating-score">4.9 <span>★</span></div>
+              <div className="rating-score">
+                4.9 <span>★</span>
+              </div>
             </div>
-          </div>
+          </section>
 
           {/* SEARCH */}
           <div className="search-box">
@@ -183,16 +193,11 @@ const Dashboard = () => {
                       By <strong>{post.name}</strong>
                     </p>
                     <p className="post-content">{post.content}</p>
-                    {post.deadline && (
-                      <p className="deadline">
-                        🗓 Target Date: {post.deadline}
-                      </p>
-                    )}
                   </div>
 
                   <div className="card-footer">
                     <div className="team-size">
-                      👥 Needed: {post.teamSize || 2} Partners
+                      👥 Needed: {post.teamSize || 2}
                     </div>
                     <button className="join-btn">
                       Interested (Join)
@@ -202,7 +207,7 @@ const Dashboard = () => {
               ))
             ) : (
               <div className="empty-feed">
-                <p>No study requests found. Be the first to post!</p>
+                <p>No study requests found.</p>
                 <button onClick={() => navigate("/CreateRequest")}>
                   Create a Request
                 </button>
@@ -220,15 +225,6 @@ const Dashboard = () => {
               <li>#MNNIT_MCA_Exams</li>
               <li>#WebDev_React_Project</li>
               <li>#DBMS_SQL_Practice</li>
-            </ul>
-          </div>
-
-          <div className="activity-card-modern">
-            <h4>History</h4>
-            <ul className="history-list">
-              <li>Completed OS Prep</li>
-              <li>Joined WebDev Group</li>
-              <li>Earned "Helper" Badge</li>
             </ul>
           </div>
         </aside>
