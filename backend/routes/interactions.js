@@ -1,21 +1,16 @@
-//The Chat & Request Routes (backend/routes/interactions.js)
-//Create this new file to handle sending messages and join requests.
+import express from "express";
+import User from "../models/User.js";
+import Message from "../models/Message.js";
+import CollabRequest from "../models/CollabRequest.js";
 
-const router = require('express').Router();
-const User = require('../models/User');
-const Message = require('../models/Message');
-const CollabRequest = require('../models/CollabRequest');
-const { logActivity } = require('./activity'); // Import our logger
+const router = express.Router();
 
 // --- CHAT ROUTES ---
-
-// POST /api/interactions/message
-// Send a message
 router.post('/message', async (req, res) => {
   const { firebaseUid, content, projectId } = req.body;
 
   try {
-    const user = await User.findOne({ firebaseUid });
+    const user = await User.findOne({ uid: firebaseUid });
     if (!user) return res.status(404).json({ msg: "User not found" });
 
     const msg = new Message({
@@ -24,38 +19,31 @@ router.post('/message', async (req, res) => {
       content
     });
     await msg.save();
-
     res.json(msg);
   } catch (err) {
-    res.status(500).send('Server Error');
+    res.status(500).send(err.message);
   }
 });
 
-// GET /api/interactions/messages
-// Get chat history
 router.get('/messages', async (req, res) => {
   try {
     const messages = await Message.find()
-      .populate('sender', 'name') // Show sender's name
-      .sort({ timestamp: 1 }); // Oldest first
+      .populate('sender', 'displayName')
+      .sort({ timestamp: 1 });
     res.json(messages);
   } catch (err) {
-    res.status(500).send('Server Error');
+    res.status(500).send(err.message);
   }
 });
 
 // --- COLLAB REQUEST ROUTES ---
-
-// POST /api/interactions/join-request
-// User asks to join a project
 router.post('/join-request', async (req, res) => {
   const { firebaseUid, postId, message } = req.body;
 
   try {
-    const user = await User.findOne({ firebaseUid });
+    const user = await User.findOne({ uid: firebaseUid });
     if (!user) return res.status(404).json({ msg: "User not found" });
 
-    // 1. Create the Request
     const newRequest = new CollabRequest({
       sender: user._id,
       postId,
@@ -63,8 +51,8 @@ router.post('/join-request', async (req, res) => {
     });
     await newRequest.save();
 
-    // 2. AUTOMATICALLY RECORD THIS ACTIVITY
-    await logActivity(user._id, "SENT_REQUEST", `Requested to join post ${postId}`);
+    // Log Activity directly to User's achievements/stats if needed
+    // (We can expand this later)
 
     res.json(newRequest);
   } catch (err) {
@@ -73,4 +61,4 @@ router.post('/join-request', async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;
