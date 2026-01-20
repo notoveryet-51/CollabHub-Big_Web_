@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom"; // useLocatio
 import { auth, db } from "../firebase";
 import { signOut } from "firebase/auth";
 import { doc, onSnapshot } from "firebase/firestore";
+import shape from './images/shape.png';
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -36,7 +37,8 @@ const Navbar = () => {
     <nav className="navbar">
       <div className="nav-left">
         <Link to="/Home" className="logo-placeholder" style={{ textDecoration: 'none' }}>
-          Collab-Hub
+        <img className="shape" src={shape} alt="CollabHub" height="40" width="40" />
+        <div className="block">COLLABHUB</div>
         </Link>
       </div>
 

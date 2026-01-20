@@ -190,10 +190,12 @@ const AuthForm = () => {
   };
 
   return ( 
-<div className="margin">
-
-<><img className="logo" src={name} alt="CollabHub" height="230" width="500" /><div className="container">
     
+<div className="margin">
+  
+
+<><img className="logo" src={name} alt="CollabHub" height="230" width="500" />
+    <div className="container">
       {/* Tabs */}
       <div className="tab-header">
         <div
