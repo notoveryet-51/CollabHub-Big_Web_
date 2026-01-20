@@ -139,6 +139,18 @@ const AuthForm = () => {
     <div className="margin">
       <img className="logo" src={name} alt="CollabHub" height="230" width="500" />
       <div className="container">
+        <ul class="circles">
+                    <li></li>
+                    <li></li>
+                    <li></li>
+                    <li></li>
+                    <li></li>
+                    <li></li>
+                    <li></li>
+                    <li></li>
+                    <li></li>
+                    <li></li>
+            </ul>
         <div className="tab-header">
           <div className={`tab ${activeTab === "login" ? "active" : ""}`} onClick={() => setActiveTab("login")}>Login</div>
           <div className={`tab ${activeTab === "signup" ? "active" : ""}`} onClick={() => setActiveTab("signup")}>Sign Up</div>
