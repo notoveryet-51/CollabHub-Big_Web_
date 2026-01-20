@@ -1,22 +1,23 @@
-const router = require('express').Router();
-const Post = require('../models/Post'); // Ensure you have a Post model
-const User = require('../models/User');
+import express from "express";
+import Post from "../models/Post.js"; 
+import User from "../models/User.js";
+
+const router = express.Router();
 
 // POST /api/posts/create
 router.post('/create', async (req, res) => {
-  const { title, desc, firebaseUid } = req.body;
+  const { title, desc, firebaseUid, tags } = req.body; // Added 'tags'
 
   try {
-    // Optional: Verify user exists in MongoDB first
-    const user = await User.findOne({ firebaseUid });
+    const user = await User.findOne({ uid: firebaseUid });
     if (!user) return res.status(404).json({ msg: "User not found" });
 
-    // Create the post linked to the User
-    // Assuming your Post model has a 'user' field that references the User ID or stores firebaseUid
     const newPost = new Post({
-      user: user._id, // Linking to MongoDB _id (Best Practice)
+      user: user._id, 
       title,
       description: desc,
+      tags: tags || [], // Saves ["React", "DSA"]
+      location: user.location // Auto-tag post with user's location
     });
 
     await newPost.save();
@@ -26,15 +27,13 @@ router.post('/create', async (req, res) => {
     res.status(500).send('Server Error');
   }
 });
-// GET /api/posts
-// Description: Get all posts sorted by newest first
+
+// GET /api/posts (Feed)
 router.get('/', async (req, res) => {
   try {
     const posts = await Post.find()
-      .sort({ createdAt: -1 }) // Sort by newest first
-      .populate('user', 'name email'); // <--- THE MAGIC LINE
-      // .populate() tells Mongo: "Go to the User collection, find the user with this ID, 
-      // and replace the ID here with their actual 'name' and 'email'."
+      .sort({ createdAt: -1 }) 
+      .populate('user', 'displayName email photoURL'); // Fetches user details
 
     res.json(posts);
   } catch (err) {
@@ -43,4 +42,4 @@ router.get('/', async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

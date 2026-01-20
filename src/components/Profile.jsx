@@ -3,17 +3,24 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom"; // Navigation ke liye useNavigate add kiya
 import { auth } from "../firebase"; // Logout ke liye auth zaroori hai
 import { signOut } from "firebase/auth";
+import EditProfileModal from "./EditProfileModal";
 import "./Profile.css";
 import "./Home.css";
 
 const Profile = () => {
   const navigate = useNavigate();
+
+  const [isEditing, setIsEditing] = useState(false);
+
   
   // 1. User ki details save karne ke liye state
   const [user, setUser] = useState({
     name: "Alok Kumar", // Default fallback name
     email: "alok.kumar@example.com",
-    photo: null
+    photo: null,
+    // Add these fields so they don't crash if missing
+    location: { city: "", college: "" }, 
+    interests: []
   });
 
   // 2. Page load hote hi LocalStorage se data nikalna
@@ -24,7 +31,9 @@ const Profile = () => {
       setUser({
         name: parsedUser.name || "User",
         email: parsedUser.email || "No email provided",
-        photo: parsedUser.photo || null
+        photo: parsedUser.photo || null,
+        location: parsedUser.location || {}, // Load location if it exists
+        interests: parsedUser.interests || [] // Load interests if they exist
       });
     }
   }, []);
@@ -38,6 +47,16 @@ const Profile = () => {
     } catch (error) {
       console.error("Logout failed", error);
     }
+  };
+
+  // Helper to handle saving data from the Modal
+  const handleSaveProfile = (updatedData) => {
+    // Merge the new data (city, interests) into our current state
+    const newUserState = { ...user, ...updatedData };
+    setUser(newUserState);
+    
+    // Optional: Update localStorage too so it persists on refresh
+    localStorage.setItem("userLoggedIn", JSON.stringify(newUserState));
   };
 
   return (
@@ -73,28 +92,51 @@ const Profile = () => {
 
             <div className="info-box">
               <span className="label">College</span>
-              <span>MNNIT Allahabad</span>
+             {/* Show the updated college or fallback */}
+              <span>{user.location?.college || "MNNIT Allahabad"}</span>
             </div>
 
             <div className="info-box">
               <span className="label">Interests</span>
-              <span>DSA, Web Development</span>
+              {/* Join the array to show as text (e.g. "React, AI") */}
+              <span>
+                {user.interests && user.interests.length > 0 
+                  ? user.interests.join(", ") 
+                  : "Add Interests +"}
+              </span>
             </div>
 
             <div className="info-box">
-              <span className="label">Study Sessions</span>
-              <span>5 Joined</span>
+              <span className="label">City</span>
+              {/* Show the updated city */}
+              <span>{user.location?.city || "Not set"}</span>
             </div>
           </div>
 
           {/* Buttons */}
           <div className="profile-actions">
-            <button className="btn-primary">Edit Profile</button>
-            {/* Logout button par handleLogout function lagaya */}
+            {/* <--- 3. UPDATE THE BUTTON TO OPEN MODAL */}
+            <button 
+              className="btn-primary" 
+              onClick={() => setIsEditing(true)}
+            >
+              Edit Profile
+            </button>
+
             <button className="btn-secondary" onClick={handleLogout}>Logout</button>
           </div>
         </div>
       </div>
+
+      {/* <--- 4. ADD THE MODAL COMPONENT AT THE BOTTOM */}
+      {isEditing && (
+        <EditProfileModal 
+          user={user} 
+          onClose={() => setIsEditing(false)} 
+          onSave={handleSaveProfile} 
+        />
+      )}
+
     </>
   );
 };

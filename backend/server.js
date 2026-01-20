@@ -1,56 +1,60 @@
 import express from "express";
+import cors from "cors";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
-import cors from "cors";
 
+// Import Routes
 import authRoutes from "./routes/auth.js";
 import userRoutes from "./routes/user.js";
+import postsRoutes from "./routes/posts.js";           // Make sure this file exists
+import interactionsRoutes from "./routes/interactions.js"; // Make sure this file exists
 
 dotenv.config();
 
+// Initialize App
 const app = express();
 
-/* MIDDLEWARE */
+// --- 1. DATABASE CONNECTION ---
+// We connect directly here to keep it simple and effective for ES Modules
+const connectDB = async () => {
+  try {
+    // Uses MONGO_URI from .env if available, otherwise defaults to local Compass string
+    const dbURI = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/collabhub";
+    
+    await mongoose.connect(dbURI);
+    
+    console.log("✅ MongoDB Local Connected Successfully");
+    console.log(`   Target: ${dbURI.includes("127.0.0.1") ? "Local Compass" : "Cloud Atlas"}`);
+  } catch (err) {
+    console.error("❌ MongoDB Connection Error:", err.message);
+    process.exit(1);
+  }
+};
+
+// Connect to Database
+connectDB();
+
+// --- 2. MIDDLEWARE ---
 app.use(cors());
-app.use(express.json());
+app.use(express.json()); // Parses incoming JSON requests
 
-/* DATABASE */
-mongoose
-  .connect(process.env.MONGO_URI)
-  .then(() => console.log("MongoDB connected"))
-  .catch(err => console.error(err));
-
-/* ROUTES */
+// --- 3. ROUTES ---
+// Auth & User Management
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 
-/* HEALTH CHECK */
+// Core Features (Posts & Interactions)
+app.use("/api/posts", postsRoutes);
+app.use("/api/interactions", interactionsRoutes);
+
+// Health Check (To test if server is alive)
 app.get("/", (req, res) => {
-  res.send("Backend running");
+  res.send("🚀 Collab-Hub Backend is Running...");
 });
 
-/* SERVER */
+// --- 4. START SERVER ---
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () =>
-  console.log(`Server running on port ${PORT}`)
-);
-
-const express = require('express');
-const cors = require('cors'); // Import CORS
-
-
-app.use(cors()); // <--- Enable CORS for all routes
-app.use(express.json());
-
-// ... rest of your routes ...
-
-// ... (Previous imports)
-const interactionsRoute = require('./routes/interactions');
-
-// ... (Middleware)
-
-// Use the routes
-app.use('/api/interactions', interactionsRoute); 
-// Now you can fetch: 
-// http://localhost:5000/api/interactions/messages
-// http://localhost:5000/api/interactions/join-request
+app.listen(PORT, () => {
+  console.log(`🚀 Server started on port ${PORT}`);
+  console.log(`📡 Ready to receive data from Frontend`);
+});
