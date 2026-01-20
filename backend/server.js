@@ -8,6 +8,7 @@ import authRoutes from "./routes/auth.js";
 import userRoutes from "./routes/user.js";
 import postsRoutes from "./routes/posts.js";           // Make sure this file exists
 import interactionsRoutes from "./routes/interactions.js"; // Make sure this file exists
+import dashboardRoutes from "./routes/dashboard.js"; // <--- Import the new file
 
 dotenv.config();
 
@@ -58,3 +59,11 @@ app.listen(PORT, () => {
   console.log(`🚀 Server started on port ${PORT}`);
   console.log(`📡 Ready to receive data from Frontend`);
 });
+
+app.use("/api/posts", postsRoutes);
+app.use("/api/interactions", interactionsRoutes);
+
+// ADD THIS LINE:
+app.use("/api/dashboard", dashboardRoutes); 
+
+// ... existing listen code ...
