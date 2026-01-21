@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { auth, db } from "../firebase";
-import { signOut, onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged } from "firebase/auth";
 import { doc, onSnapshot } from "firebase/firestore";
 import shape from './images/shape.png';
 
@@ -10,22 +10,24 @@ const Navbar = () => {
   const location = useLocation();
   const [streak, setStreak] = useState(0);
   const [isLoggedIn, setIsLoggedIn] = useState(localStorage.getItem("userLoggedIn") === "true");
+  const [userPhoto, setUserPhoto] = useState(null);
 
-  // Firebase Auth Listener: Ye check karega ki user waqai logged in hai ya nahi
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         setIsLoggedIn(true);
         localStorage.setItem("userLoggedIn", "true");
+        // Firebase se photo fetch kar rahe hain, agar nahi hai toh default initial dikhayega
+        setUserPhoto(user.photoURL || `https://ui-avatars.com/api/?name=${user.email}&background=random`);
       } else {
         setIsLoggedIn(false);
         localStorage.removeItem("userLoggedIn");
+        setUserPhoto(null);
       }
     });
     return () => unsubscribe();
   }, []);
 
-  // Real-time Streak Listener (Sirf tab chalega jab user logged in ho)
   useEffect(() => {
     if (auth.currentUser) {
       const userRef = doc(db, "users", auth.currentUser.uid);
@@ -37,17 +39,6 @@ const Navbar = () => {
       return () => unsubscribe();
     }
   }, [isLoggedIn]);
-
-  const handleLogout = async () => {
-    try {
-      await signOut(auth);
-      localStorage.removeItem("userLoggedIn");
-      setIsLoggedIn(false);
-      navigate("/"); // Logout ke baad Home page par bhej dega
-    } catch (error) {
-      console.error("Logout Error:", error);
-    }
-  };
 
   const isActive = (path) => location.pathname === path;
 
@@ -61,7 +52,6 @@ const Navbar = () => {
       </div>
 
       <div className="nav-right">
-        {/* Home Link hamesha dikhega */}
         <button 
           className={`cta-button ${isActive("/") ? "active-cta" : ""}`} 
           onClick={() => navigate("/")}
@@ -69,7 +59,6 @@ const Navbar = () => {
           Home
         </button>
         
-        {/* Protected Links: Sirf Login ke baad dikhenge */}
         {isLoggedIn ? (
           <>
             <button 
@@ -77,13 +66,6 @@ const Navbar = () => {
               onClick={() => navigate("/Dashboard")}
             >
               Dashboard
-            </button>
-            
-            <button 
-              className={`cta-button ${isActive("/Profile") ? "active-cta" : ""}`} 
-              onClick={() => navigate("/Profile")}
-            >
-              Profile
             </button>
 
             <button 
@@ -93,13 +75,16 @@ const Navbar = () => {
               Create Request
             </button>
 
-            {/* Logout Button */}
-            <button className="cta-button logout-btn" onClick={handleLogout}>
-              Logout
-            </button>
+            {/* Profile Image - Sabse right mein aur click karne par Profile par le jayega */}
+            <div className="nav-profile-wrapper" onClick={() => navigate("/Profile")}>
+               <img 
+                 src={userPhoto} 
+                 alt="User Profile" 
+                 className={`nav-profile-img ${isActive("/Profile") ? "active-img" : ""}`} 
+               />
+            </div>
           </>
         ) : (
-          /* Login Button: Agar user logged in nahi hai tab dikhao */
           <button 
             className={`cta-button ${isActive("/login") ? "active-cta" : ""}`} 
             onClick={() => navigate("/login")}
