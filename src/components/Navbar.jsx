@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { auth, db } from "../firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { doc, onSnapshot } from "firebase/firestore";
-import shape from "./images/shape.png";
+import shape from "./images/logob.png";
 import ThemeToggle from "./ThemeToggle";
 
 const Navbar = () => {
@@ -55,7 +55,7 @@ const Navbar = () => {
       {/* LEFT */}
       <div className="nav-left">
         <Link to="/" className="logo-placeholder" style={{ textDecoration: "none" }}>
-          <img src={shape} alt="CollabHub" height="40" width="40" />
+          <img src={shape} alt="CollabHub" className="hex" height="40" width="55" />
           <div className="block">COLLABHUB</div>
         </Link>
       </div>
