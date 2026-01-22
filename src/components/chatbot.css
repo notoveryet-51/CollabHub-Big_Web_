@@ -2,11 +2,10 @@
 
 /* --- Floating Button (Blue Circle) --- */
 .chatbot-fab {
-  /* ✅ FIXED: !important ensure karega ki ye screen par JAM jaye */
-  position: fixed !important; 
-  bottom: 30px;
-  right: 30px;
-  
+  position: sticky; 
+  top: 90%;  
+  left: 95%;
+  z-index: 1000;
   width: 60px;
   height: 60px;
   background-color: #0a66c2; /* LinkedIn Blue */
@@ -16,11 +15,8 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-  
-  /* ✅ Z-INDEX: Ye ensure karega ki ye sabse upar dikhe */
-  z-index: 99999; 
-  transition: transform 0.3s ease;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  transition: transform 0.2s ease;
 }
 
 .chatbot-fab:hover {
@@ -36,11 +32,9 @@
 
 /* --- Chat Window --- */
 .chatbot-window {
-  /* ✅ FIXED: Window bhi screen ke kone mein fixed rahegi */
-  position: fixed !important;
-  bottom: 100px;
-  right: 30px;
-  
+  position:fixed;
+  top: 30%;
+  left: 77%;
   width: 320px;
   background: white;
   border-radius: 12px;

@@ -1,10 +1,9 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const PostSchema = new mongoose.Schema({
-  // This 'user' field links this post to a specific document in the 'users' collection
   user: {
-    type: mongoose.Schema.Types.ObjectId, // We store the MongoDB _id here
-    ref: 'User',                          // This tells Mongoose it refers to the 'User' model
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
     required: true
   },
   title: {
@@ -21,4 +20,5 @@ const PostSchema = new mongoose.Schema({
   }
 });
 
-module.exports = mongoose.model('Post', PostSchema);
+const Post = mongoose.model('Post', PostSchema);
+export default Post;

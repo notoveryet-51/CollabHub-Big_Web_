@@ -1,10 +1,6 @@
-//The "Recorder" Route (backend/routes/activity.js)
-//Note: We usually won't call this manually from the frontend. Instead, we call this inside other backend routes whenever something happens.
+import ActivityLog from '../models/ActivityLog.js';
 
-// Helper function to be used inside other routes
-const ActivityLog = require('../models/ActivityLog');
-
-const logActivity = async (userId, actionType, description) => {
+export const logActivity = async (userId, actionType, description) => {
   try {
     const newLog = new ActivityLog({
       user: userId,
@@ -12,10 +8,8 @@ const logActivity = async (userId, actionType, description) => {
       description
     });
     await newLog.save();
-    console.log(`[Activity Logged]: ${description}`);
+    console.log(`📝 [Activity]: ${description}`);
   } catch (err) {
-    console.error("Logging failed:", err);
+    console.error("❌ Logging failed:", err);
   }
 };
-
-module.exports = { logActivity };

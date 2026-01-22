@@ -1,14 +1,18 @@
 import React from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 
-import AuthForm from "./components/AuthForm";
-import Dashboard from "./components/Dashboard";
-import PrivateRoute from "./components/PrivateRoute";
-import Navbar from "./components/Navbar";
-import Home from "./components/Home";
-import Profile from "./components/Profile";
-import CreateRequest from "./components/CreateRequest";
-import Chatbot from "./components/chatbot";
+// --- Existing Imports (Now with .jsx extensions) ---
+import AuthForm from "./components/AuthForm.jsx";
+import Dashboard from "./components/Dashboard.jsx";
+import PrivateRoute from "./components/PrivateRoute.jsx";
+import Navbar from "./components/Navbar.jsx";
+import Home from "./components/Home.jsx";
+import Profile from "./components/Profile.jsx";
+import CreateRequest from "./components/CreateRequest.jsx";
+import Chatbot from "./components/chatbot.jsx";
+
+// --- NEW IMPORT ---
+import EventFinder from "./components/EventFinder.jsx"; 
 
 import "./App.css";
 
@@ -55,6 +59,17 @@ function App() {
             </PrivateRoute>
           }
         />
+
+        {/* --- NEW ROUTE FOR EVENT FINDER --- */}
+        <Route
+          path="/events"
+          element={
+            <PrivateRoute>
+              <EventFinder />
+            </PrivateRoute>
+          }
+        />
+
       </Routes>
     </div>
   );
