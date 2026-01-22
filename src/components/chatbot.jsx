@@ -6,25 +6,29 @@ const Chatbot = () => {
 
   return (
     <>
-      {/* Floating Button */}
+      {/* Floating Button (Fixed Position) */}
       <div
         className="chatbot-fab"
         onClick={() => setOpen(!open)}
         title="Chat with us"
       >
-        💬
+        {/* Professional Chat Icon */}
+        <img 
+          src="https://cdn.jsdelivr.net/npm/remixicon@4.8.0/icons/Communication/chat-4-fill.svg" 
+          alt="Chat"
+        />
       </div>
 
       {/* Chat Window */}
       {open && (
         <div className="chatbot-window">
           <div className="chatbot-header">
-            <span>CollabHub Assistant</span>
+            <span>CollabHub Assistant 🤖</span>
             <button onClick={() => setOpen(false)}>✕</button>
           </div>
 
           <div className="chatbot-body">
-            <p className="bot-msg">Hi 👋 How can I help you?</p>
+            <p className="bot-msg">Hi 👋 How can I help you today?</p>
           </div>
 
           <div className="chatbot-footer">
