@@ -13,7 +13,8 @@ import {
 } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import "./AuthForm.css";
-import name from './images/logo.png';
+import name from './images/webName.png';
+import hex from './images/shape.png';
 
 const AuthForm = () => {
   const [activeTab, setActiveTab] = useState("login");
@@ -182,25 +183,29 @@ const AuthForm = () => {
 
   return ( 
     <div className="margin">
-      <>
-        <img className="logo" src={name} alt="CollabHub" height="230" width="500" />
-        <div className="container">
-    
-          {/* Tabs */}
-          <div className="tab-header">
-            <div
-              className={`tab ${activeTab === "login" ? "active" : ""}`}
-              onClick={() => setActiveTab("login")}
-            >
-              Login
-            </div>
-            <div
-              className={`tab ${activeTab === "signup" ? "active" : ""}`}
-              onClick={() => setActiveTab("signup")}
-            >
-              Sign Up
-            </div>
-          </div>
+
+        <img className="shape1" src={hex} alt="CollabHub" height="72" width="78" />
+       
+        <img className="logo" src={name} alt="CollabHub" height="60" width="300" />   
+     
+      
+      <div className="container1">
+        <ul class="circles">
+                    <li></li>
+                    <li></li>
+                    <li></li>
+                    <li></li>
+                    <li></li>
+                    <li></li>
+                    <li></li>
+                    <li></li>
+                    <li></li>
+                    <li></li>
+            </ul>
+        <div className="tab-header">
+          <div className={`tab ${activeTab === "login" ? "active" : ""}`} onClick={() => setActiveTab("login")}>Login</div>
+          <div className={`tab ${activeTab === "signup" ? "active" : ""}`} onClick={() => setActiveTab("signup")}>Sign Up</div>
+        </div>
 
           {/* LOGIN */}
           {activeTab === "login" && (
