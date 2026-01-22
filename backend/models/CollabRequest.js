@@ -1,7 +1,4 @@
-//Collaboration Requests (backend/models/CollabRequest.js)
-//This tracks when someone clicks "Join" on a post. It needs a Status (Pending/Accepted/Rejected).
-
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const RequestSchema = new mongoose.Schema({
   sender: { // The person asking to join
@@ -28,4 +25,5 @@ const RequestSchema = new mongoose.Schema({
   }
 });
 
-module.exports = mongoose.model('CollabRequest', RequestSchema);
+const CollabRequest = mongoose.model('CollabRequest', RequestSchema);
+export default CollabRequest;

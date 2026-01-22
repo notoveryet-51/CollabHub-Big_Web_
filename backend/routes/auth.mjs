@@ -1,15 +1,13 @@
 import express from "express";
 import User from "../models/User.js";
+import { logActivity } from "./activity.js"; 
 
 const router = express.Router();
 
-// ROUTE: POST /api/auth/sync
-// DESC: Called by Frontend immediately after Firebase Login
 router.post("/sync", async (req, res) => {
   const { uid, email, displayName, photoURL } = req.body;
 
   try {
-    // "Upsert": Update if exists, Create if new
     const user = await User.findOneAndUpdate(
       { uid: uid },
       {
@@ -19,19 +17,20 @@ router.post("/sync", async (req, res) => {
           photoURL: photoURL,
           "stats.lastLogin": new Date()
         },
-        // Defaults for NEW users only
         $setOnInsert: {
           "location.country": "India",
           interests: [],
           friends: [],
-          friendRequests: [], // Important for connections
+          friendRequests: [],
           stats: { loginStreak: 1, totalCollaborations: 0 }
         }
       },
       { new: true, upsert: true }
     );
 
-    console.log(`✅ User Synced: ${user.displayName}`);
+    // 🔥 LOGGING ADDED HERE
+    await logActivity(user._id, "LOGIN", `User ${user.displayName} logged in.`);
+
     res.status(200).json(user);
 
   } catch (err) {

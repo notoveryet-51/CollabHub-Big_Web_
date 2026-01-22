@@ -1,76 +1,63 @@
 import express from "express";
 import User from "../models/User.js";
-import Hackathon from "../models/Hackathon.js";
-import Event from "../models/Event.js";
-import Post from "../models/Post.js"; 
+import Event from "../models/Event.mjs"; // Assuming you have this, or use generic logic
 
 const router = express.Router();
 
-// 1. STATS
-router.get('/stats/:uid', async (req, res) => {
+// --- 1. GET SUGGESTIONS (Users to Connect With) ---
+router.get("/suggestions/:uid", async (req, res) => {
   try {
-    const user = await User.findOne({ uid: req.params.uid });
-    const stats = {
-      streak: user.stats?.loginStreak || 0,
-      hackathonsParticipated: user.participatingEvents?.length || 0,
-      eventsParticipated: user.favorites?.length || 0, // Showing Likes as "Events" count for now
-    };
-    res.json({ stats });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
+    const currentUid = req.params.uid;
 
-// 2. HACKATHONS
-router.get('/hackathons', async (req, res) => {
-  try {
-    const hackathons = await Hackathon.find().sort({ createdAt: -1 });
-    res.json(hackathons);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
+    // Fetch up to 5 users who are NOT the current user
+    // { uid: { $ne: currentUid } } means "Not Equal" to current ID
+    const suggestions = await User.find({ uid: { $ne: currentUid } })
+      .select("uid displayName location photoURL") // Only get necessary fields
+      .limit(5);
 
-// 3. EVENTS
-router.get('/events', async (req, res) => {
-  try {
-    const events = await Event.find().sort({ date: 1 });
-    res.json(events);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// 4. REAL SUGGESTIONS (New!)
-router.get('/suggestions/:uid', async (req, res) => {
-  try {
-    // 1. Find Current User to exclude friends
-    const currentUser = await User.findOne({ uid: req.params.uid });
-    const friendIds = currentUser ? currentUser.friends : [];
-
-    // 2. Find Users who are NOT me AND NOT my friends
-    const suggestions = await User.find({ 
-        uid: { $ne: req.params.uid },
-        _id: { $nin: friendIds } // Exclude existing friends
-    })
-    .limit(5) // Suggest 5 people
-    .select('displayName location uid role'); 
-    
     res.json(suggestions);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error("Error fetching suggestions:", err);
+    res.status(500).json({ error: "Failed to fetch suggestions" });
   }
 });
 
-// 5. SEARCH
-router.get('/search', async (req, res) => {
-  const { q } = req.query;
+// --- 2. GET DASHBOARD STATS ---
+router.get("/stats/:uid", async (req, res) => {
   try {
-    const regex = new RegExp(q, 'i');
-    const hackathons = await Hackathon.find({ title: regex });
-    res.json({ hackathons });
+    const user = await User.findOne({ uid: req.params.uid });
+    
+    // Return real data from DB, or defaults if missing
+    res.json({
+      stats: {
+        streak: user?.stats?.loginStreak || 1,
+        hackathonsParticipated: user?.achievements?.length || 0,
+        eventsParticipated: user?.participatingEvents?.length || 0
+      }
+    });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: "Failed to fetch stats" });
+  }
+});
+
+// --- 3. GET HACKATHONS (Mock Data or DB) ---
+router.get("/hackathons", async (req, res) => {
+  // You can replace this with a real Hackathon.find() query later
+  const mockHackathons = [
+    { _id: "h1", title: "MNNIT CodeWar", description: "Annual coding battle.", mode: "Offline", createdAt: new Date() },
+    { _id: "h2", title: "React Global Summit", description: "Online hackathon for React devs.", mode: "Online", createdAt: new Date() }
+  ];
+  res.json(mockHackathons);
+});
+
+// --- 4. GET EVENTS ---
+router.get("/events", async (req, res) => {
+  try {
+    // If you have an Event model, use: const events = await Event.find().limit(5);
+    // For now, returning an empty array or mock data works to prevent errors
+    res.json([]); 
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch events" });
   }
 });
 

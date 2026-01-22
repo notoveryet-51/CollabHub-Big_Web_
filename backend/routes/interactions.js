@@ -2,6 +2,7 @@ import express from "express";
 import User from "../models/User.js";
 import Message from "../models/Message.js";
 import CollabRequest from "../models/CollabRequest.js";
+import { logActivity } from "./activity.js"; 
 
 const router = express.Router();
 
@@ -25,17 +26,6 @@ router.post('/message', async (req, res) => {
   }
 });
 
-router.get('/messages', async (req, res) => {
-  try {
-    const messages = await Message.find()
-      .populate('sender', 'displayName')
-      .sort({ timestamp: 1 });
-    res.json(messages);
-  } catch (err) {
-    res.status(500).send(err.message);
-  }
-});
-
 // --- COLLAB REQUEST ROUTES ---
 router.post('/join-request', async (req, res) => {
   const { firebaseUid, postId, message } = req.body;
@@ -51,8 +41,8 @@ router.post('/join-request', async (req, res) => {
     });
     await newRequest.save();
 
-    // Log Activity directly to User's achievements/stats if needed
-    // (We can expand this later)
+    // 🔥 LOGGING ADDED HERE
+    await logActivity(user._id, "JOIN_REQUEST", `Requested to join project ${postId}`);
 
     res.json(newRequest);
   } catch (err) {
