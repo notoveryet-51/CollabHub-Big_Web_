@@ -14,7 +14,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import "./AuthForm.css";
 import name from './images/webName.png';
-import hex from './images/shape.png';
+import hex from './images/logob.png';
 
 const AuthForm = () => {
   const [activeTab, setActiveTab] = useState("login");
@@ -180,7 +180,7 @@ const AuthForm = () => {
   return ( 
     <div className="margin">
 
-        <img className="shape1" src={hex} alt="CollabHub" height="72" width="78" />
+        <img className="shape1" src={hex} alt="CollabHub" height="80" width="93" />
        
         <img className="logo" src={name} alt="CollabHub" height="60" width="300" />   
       

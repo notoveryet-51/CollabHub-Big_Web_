@@ -2,7 +2,8 @@ import React, { useEffect, useState, useMemo } from "react";
 import { db, auth } from "../firebase";
 import { collection, query, orderBy, onSnapshot, addDoc, serverTimestamp } from "firebase/firestore";
 import "./Home.css";
-import logo from './images/shape.png';
+import logo from './images/logob.png';
+import logow from './images/logow.png';
 
 function Home() {
   const [posts, setPosts] = useState([]);
@@ -91,14 +92,15 @@ function Home() {
     <div className="home-page">
        <div className="div1">
         <div className="block1">
-  
-          <div className="welcome"><h1>Welcome to</h1></div>
-          
-          <div className="welcome1"><h1>the</h1></div>
-          <div className="welcome2"><h1>COLLABHUB</h1></div>
+      {/* <img src={logow} alt="CollabHub" className="hexw" height="400" width="440" /> */}
+          <div className="welcome"><h1 style={{fontFamily: "jetbrains mono"}}>Welcome to</h1></div>
+          <div className="welcome1"><h1 style={{fontFamily: "jetbrains mono"}}>the</h1></div>
+          <div className="welcome2"><h1 style={{fontFamily: "jetbrains mono"}}>COLLABHUB</h1></div>
+        <div className="tagline"><h3 className="tagline">&lt; Where we help connect your teammates &gt;</h3></div>
         
         </div>
         <div className="block2">
+          <img src={logow} alt="CollabHub" className="hexw" height="400" width="440" />
         </div>
        </div>
       <main className="container">
